@@ -1,4 +1,4 @@
-public class MarcaTexto extends Livraria{
+public class MarcaTexto extends Material {
     private String tipoPonta;
     private String formato;
 

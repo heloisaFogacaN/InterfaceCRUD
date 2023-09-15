@@ -1,4 +1,4 @@
-public class Livro extends Livraria {
+public class Livro extends Material {
     private String titulo;
     private String tipoCapa;
 

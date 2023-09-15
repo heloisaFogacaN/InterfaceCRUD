@@ -1,4 +1,4 @@
-public class Papel extends Livraria{
+public class Papel extends Material {
     private double tamanho;
     private double tipo;
 
