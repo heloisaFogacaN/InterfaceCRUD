@@ -3,10 +3,11 @@ import java.util.Scanner;
 public class Main {
     static Scanner scanner = new Scanner(System.in);
     static BDComida bdComida = new BDComida();
-    static Comida cafe = new Cafe("1", 1, "1", 1);
+    //    static Comida cafe = new Cafe("1", 1, "1", 1);
+    static BDMaterial bdMaterial = new BDMaterial();
 
     public static void main(String[] args) {
-        bdComida.create(cafe);
+//        bdComida.create(cafe);
         menu();
     }
 
@@ -29,14 +30,14 @@ public class Main {
                     menuComida();
                     break;
                 case 2:
-//                    menuMaterial();
+                    menuMaterial();
                     break;
                 default:
                     System.out.println("Opção inválida!");
             }
         } while (opcao != 0);
-
     }
+
 
     private static void menuComida() {
         int opcao;
@@ -47,7 +48,7 @@ public class Main {
                     1- Criar 
                     2- Listar apenas 1
                     3- Listar todos
-                    4- Fazer uma alteração 
+                    4- Fazer alteração 
                     5- Remover
                     0- Sair
                     """);
@@ -56,17 +57,27 @@ public class Main {
                 case 0:
                     break;
                 case 1:
-                    criarComida();
+                    createComida();
                     break;
                 case 2:
-                    listarApenasUm();
+                    readOneComida();
                     break;
+                case 3:
+                    readAllComida();
+                    break;
+                case 4:
+                    upDateComida();
+                    break;
+                case 5:
+                    deleteComida();
+                    break;
+                default:
+                    System.out.println("Opção inválida!");
             }
         } while (opcao != 0);
     }
 
-
-    private static void criarComida() {
+    private static void createComida() {
         int opcao;
         do {
             System.out.println("""
@@ -83,13 +94,13 @@ public class Main {
                 case 0:
                     break;
                 case 1:
-                    criarCafe();
+                    criarCafe(false, 0);
                     break;
                 case 2:
-                    criarPao();
+                    criarPao(false, 0);
                     break;
                 case 3:
-                    criarTorta();
+                    criarTorta(false, 0);
                     break;
                 default:
                     System.out.println("Opção inválida!");
@@ -97,7 +108,7 @@ public class Main {
         } while (opcao != 0);
     }
 
-    private static void criarCafe() {
+    private static void criarCafe(boolean upDate, int id) {
         System.out.println("Informe o preço:");
         double preco = scanner.nextDouble();
         System.out.println("Informe o código:");
@@ -107,13 +118,16 @@ public class Main {
         System.out.println("Informe a porcentagem de ácidez:");
         double acidez = scanner.nextDouble();
 
-        boolean cafeCadastrado = verificarSeExiste(codigo);
-
-        cadastrar(cafeCadastrado, codigo, preco, tipo, acidez);
+        if (!upDate) {
+            cadastrarComida(verificarSeExisteComida(codigo), codigo, preco, tipo, acidez, 1);
+        } else {
+            Comida cafeAdd = new Cafe(codigo, preco, id, tipo, acidez);
+            bdComida.upDate(id, cafeAdd);
+        }
     }
 
 
-    private static void criarPao() {
+    private static void criarPao(boolean upDate, int id) {
         System.out.println("Informe o preço:");
         double preco = scanner.nextDouble();
         System.out.println("Informe o código:");
@@ -123,12 +137,15 @@ public class Main {
         System.out.println("Informe o comprimento do pão:");
         double comprimento = scanner.nextDouble();
 
-        boolean paoCadastrado = verificarSeExiste(codigo);
-
-        cadastrar(paoCadastrado, codigo, preco, tipo, comprimento);
+        if (!upDate) {
+            cadastrarComida(verificarSeExisteComida(codigo), codigo, preco, tipo, comprimento, 2);
+        } else {
+            Comida paoAdd = new Pao(codigo, preco, id, tipo, comprimento);
+            bdComida.upDate(id, paoAdd);
+        }
     }
 
-    private static void criarTorta() {
+    private static void criarTorta(boolean upDate, int id) {
         System.out.println("Informeo preço:");
         double preco = scanner.nextDouble();
         System.out.println("Informe o código:");
@@ -138,12 +155,15 @@ public class Main {
         System.out.println("Informe o diâmetro da torta:");
         double diametro = scanner.nextDouble();
 
-        boolean tortaCadastrada = verificarSeExiste(codigo);
-
-        cadastrar(tortaCadastrada, codigo, preco, recheio, diametro);
+        if (!upDate) {
+            cadastrarComida(verificarSeExisteComida(codigo), codigo, preco, recheio, diametro, 3);
+        } else {
+            Comida tortaAdd = new Torta(codigo, preco, id, recheio, diametro);
+            bdComida.upDate(id, tortaAdd);
+        }
     }
 
-    private static boolean verificarSeExiste(String codigo) {
+    private static boolean verificarSeExisteComida(String codigo) {
         for (Comida comida : bdComida.readAll()) {
             if (comida.getCodigo().equals(codigo)) {
                 return true;
@@ -152,61 +172,88 @@ public class Main {
         return false;
     }
 
-    private static void cadastrar(boolean cadastrado, String codigo, double preco, String atributoString, double atributoDouble) {
+    private static boolean verificarSeExisteComida() {
+        if (bdComida.readAll().isEmpty()) {
+            System.out.println("Ainda não há nenhum alimento cadastrado!");
+            return true;
+        }
+        return false;
+    }
+
+
+    private static void cadastrarComida(boolean cadastrado, String codigo, double preco, String atributoString,
+                                        double atributoDouble, int tipo) {
         if (cadastrado) {
-            System.out.println("Esta comida já está cadastrada!");
+            System.out.println("Já existe uma comida com este código!");
         } else {
-            Comida cafeAdd = new Cafe(codigo, preco, atributoString, atributoDouble);
-            bdComida.create(cafeAdd);
+            Comida comidaAdd = null;
+            if (tipo == 1) {
+                comidaAdd = new Cafe(codigo, preco, atributoString, atributoDouble);
+            } else if (tipo == 2) {
+                comidaAdd = new Pao(codigo, preco, atributoString, atributoDouble);
+            } else if (tipo == 3) {
+                comidaAdd = new Torta(codigo, preco, atributoString, atributoDouble);
+            }
+            bdComida.create(comidaAdd);
             System.out.println("Comida cadastrada com sucesso!");
         }
     }
 
-    private static void listarApenasUm() {
-        int opcao;
-        do {
-            System.out.println("""
-                    Informe o produto que você deseja listar:
-                                    
-                                    
-                    0- Voltar para o menu                
-                    1- Café
-                    2- Pão
-                    3- Torta
-                    """);
-            opcao = scanner.nextInt();
-            switch (opcao) {
-                case 0:
-                    break;
-                case 1:
-                    mostrarCafe();
-                    break;
-                case 2:
-//                   mostrarPao();
-                    break;
-                case 3:
-//                   mostrarTorta();
-                    break;
-                default:
-                    System.out.println("Opção inválida!");
+    private static void readOneComida() {
+        if (!verificarSeExisteComida()) {
+            int cont = 0;
+            for (Comida comidaFor : bdComida.readAll()) {
+                cont++;
+                System.out.println(cont + "- ");
+                if (comidaFor instanceof Cafe) {
+                    System.out.println(comidaFor.toStringNome() + "\n");
+                } else if (comidaFor instanceof Pao) {
+                    System.out.println(comidaFor.toStringNome() + "\n");
+                } else if (comidaFor instanceof Torta) {
+                    System.out.println(comidaFor.toStringNome() + "\n");
+                }
             }
-        } while (opcao != 0);
-
+            System.out.println("Informe o ID da comida que deseja vizualizar:");
+            int id = scanner.nextInt();
+            System.out.println(bdComida.readOne(id).toString());
+        }
     }
 
-    private static void mostrarCafe() {
-        for (Comida comida : bdComida.readAll()) {
-            if (comida instanceof Cafe) {
-                System.out.println(comida.toStringNome() + "\n");
-            } else if (comida instanceof Pao) {
-                System.out.println(comida.toStringNome() + "\n");
-            } else if (comida instanceof Torta) {
-                System.out.println(comida.toStringNome() + "\n");
+    private static void readAllComida() {
+        if (!verificarSeExisteComida()) {
+            int cont = 0;
+            for (Comida comida : bdComida.readAll()) {
+                cont++;
+                System.out.println(cont + "- " + comida.toString() + "\n");
             }
         }
-        System.out.println("Informe o ID da comida que deseja vizualizar:");
-        int id = scanner.nextInt();
-        System.out.println(bdComida.readOne(id).toString());
     }
 
+    private static void upDateComida() {
+        int id = mostrarComidas();
+        for (Comida comida : bdComida.readAll()) {
+            if (id == comida.getId() && comida instanceof Cafe) {
+                criarCafe(true, comida.getId());
+                break;
+            }
+        }
+    }
+
+    private static int mostrarComidas() {
+        int cont = 0;
+        for (Comida comida : bdComida.readAll()) {
+            cont++;
+            System.out.println(cont + "- " + comida.toStringNome());
+        }
+        System.out.println("Informe o ID do alimento que deseja editar: ");
+        return scanner.nextInt();
+    }
+
+    private static void deleteComida() {
+        int id = mostrarComidas();
+        bdComida.delete(id);
+    }
+
+    private static void menuMaterial() {
+    }
 }

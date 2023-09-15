@@ -20,7 +20,7 @@ public class BDMaterial implements ICRUD<Integer, Material> {
     }
 
     @Override
-    public void upDate(Integer integer) {
+    public void upDate(Integer integer, Material material) {
 
     }
 

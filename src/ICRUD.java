@@ -8,7 +8,7 @@ public interface ICRUD<ID extends Integer, T> {
 
     ArrayList<T> readAll();
 
-    void upDate(ID id);
+    void upDate(ID id, T t);
 
     void delete(ID id);
 

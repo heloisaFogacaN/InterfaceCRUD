@@ -9,12 +9,18 @@ public class Pao extends Comida {
         this.comprimento = comprimento;
     }
 
+    public Pao(String codigo, double preco, int id, String tipo, double comprimento) {
+        super(codigo, preco, id);
+        this.tipo = tipo;
+        this.comprimento = comprimento;
+    }
+
     @Override
     public String toString() {
-        return "Pao{" +
-                "comprimento=" + comprimento +
-                ", tipo='" + tipo + '\'' +
-                '}';
+        return "Pão\n" +
+                super.toString() +
+                "\nComprimento: " + comprimento +
+                "\nTipo: " + tipo;
     }
 
     @Override
