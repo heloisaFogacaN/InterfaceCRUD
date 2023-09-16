@@ -230,11 +230,13 @@ public class Main {
     }
 
     private static void upDateComida() {
-        int id = mostrarComidas();
-        for (Comida comida : bdComida.readAll()) {
-            if (id == comida.getId() && comida instanceof Cafe) {
-                criarCafe(true, comida.getId());
-                break;
+        if (!verificarSeExisteComida()) {
+            int id = mostrarComidas();
+            for (Comida comida : bdComida.readAll()) {
+                if (id == comida.getId() && comida instanceof Cafe) {
+                    criarCafe(true, comida.getId());
+                    break;
+                }
             }
         }
     }
@@ -245,13 +247,15 @@ public class Main {
             cont++;
             System.out.println(cont + "- " + comida.toStringNome());
         }
-        System.out.println("Informe o ID do alimento que deseja editar: ");
+        System.out.println("Informe o ID do alimento que deseja selecionar: ");
         return scanner.nextInt();
     }
 
     private static void deleteComida() {
-        int id = mostrarComidas();
-        bdComida.delete(id);
+        if (!verificarSeExisteComida()) {
+            int id = mostrarComidas();
+            bdComida.delete(id);
+        }
     }
 
     private static void menuMaterial() {
