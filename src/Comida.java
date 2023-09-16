@@ -17,9 +17,16 @@ public class Comida {
         proximoId++;
     }
 
+    public void setCodigo(String codigo) {
+        this.codigo = codigo;
+    }
 
-    public void setId(int id) {
-        this.id = id;
+    public void setPreco(double preco) {
+        this.preco = preco;
+    }
+
+    public double getPreco() {
+        return preco;
     }
 
     public String getCodigo() {

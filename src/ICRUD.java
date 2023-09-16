@@ -12,5 +12,7 @@ public interface ICRUD<ID extends Integer, T> {
 
     void delete(ID id);
 
+    T preCadastro(String s, double d, String s2, double d2, int i);
 
+    boolean verificarSeExisteObjeto(String s);
 }
